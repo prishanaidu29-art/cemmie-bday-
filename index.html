@@ -16,11 +16,12 @@
 <div class="tv-area"><div class="tv"><div class="screen-frame"><div class="screen" id="screen"><img id="photo" class="hidden" alt="A memory with Cemmie"><video id="player" playsinline controls preload="metadata" class="hidden"></video><div class="screen-content" id="empty"><div class="heart" id="screenheart">♡</div><strong id="screenTitle">HEY, BIRTHDAY GIRL!</strong><small id="screenText">SOMETHING SPECIAL IS ON THE AIR<br>PRESS PLAY TO BEGIN</small><button class="play-start" id="start">▶ PRESS PLAY</button></div><div class="screen-label">CEMMIE TV · ON AIR</div><div class="static" id="static"></div></div></div><div class="tv-detail"><span class="tv-engrave">STEREO · VIDEO CASSETTE</span><div class="dial-group"><span class="dial-label">TURN TO<br>REMEMBER ↻</span><button type="button" class="channel-dial" id="dial" aria-label="Turn dial to next memory. Drag clockwise or anticlockwise, or use arrow keys." title="Drag to tune · tap for next"><span class="dial-core"></span></button></div></div><div class="tv-bottom"><div class="tv-brand"><i class="power-light"></i>CEMMIE ORIGINALS™</div><div class="tv-grill" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><div class="tv-foot"><i></i><i></i></div></div>
 <div class="controls"><button class="control" id="prev" aria-label="Previous surprise" title="Previous">❮</button><button class="control primary" id="play" aria-label="Play or pause" title="Play or pause"><span>▶</span></button><button class="control" id="next" aria-label="Next surprise" title="Next">❯</button><button class="control" id="shuffle" aria-label="Surprise me" title="Surprise me"><span>⤨</span></button><button class="control" id="fullscreen" aria-label="Fullscreen video" title="Fullscreen"><span>⛶</span></button></div><div class="surprise-tray"><button class="surprise-card" id="mystery"><span class="emoji">🎲</span><strong>MYSTERY TAPE</strong></button><button class="surprise-card" id="birthday"><span class="emoji">🎂</span><strong>BIRTHDAY SPECIAL</strong></button><button class="surprise-card" id="rewind"><span class="emoji">📼</span><strong>REWIND TIME</strong></button></div><p class="hint" id="hint">drag the dial either way · tap to see the next memory ♡</p><p class="footer"><b>NO CHANNEL NUMBERS. NO SPOILERS.</b> JUST KEEP TURNING ♡</p></main>
 <script>
-const channels=[{"src":"3bdce53e-b8c2-4674-8def-80366c8c61e0.jpeg","type":"photo"},{"src":"5BD9F298-59DF-4CF6-A7A0-0742E0F0F1C3.jpeg","type":"photo"},{"src":"7648c1d4-54c2-4df4-88cf-eab5ebd50782.jpeg","type":"photo"},{"src":"BA0962AB-4A5B-431C-8F84-7C1A363514CF.jpeg","type":"photo"},{"src":"D7E256FF-B8D2-4125-B9A1-305982F46916.jpeg","type":"photo"},{"src":"IMG_0527_Original.jpeg","type":"photo"},{"src":"IMG_0529.png","type":"photo"},{"src":"IMG_1299.jpeg","type":"photo"},{"src":"IMG_2588_Original.jpeg","type":"photo"},{"src":"IMG_4561.jpeg","type":"photo"},{"src":"IMG_4562.jpeg","type":"photo"},{"src":"IMG_4563.jpeg","type":"photo"},{"src":"IMG_4564.jpeg","type":"photo"},{"src":"IMG_5980.jpeg","type":"photo"},{"src":"f0f3f356-2c38-403e-b72d-542b63c85328.jpeg","type":"photo"},{"src":"fd49722b-11db-4545-8ab0-4d50ce1a59c8.jpeg","type":"photo"}];
+const channels=[];
 let index=0,started=false,turn=0,version=0;
 const $=id=>document.getElementById(id),player=$('player'),photo=$('photo'),dial=$('dial');
 function message(title,text){$('empty').classList.remove('hidden');$('screenTitle').textContent=title;$('screenText').textContent=text;$('start').textContent='NEXT MEMORY ❯'}
 function render(){
+ if(!channels.length){message("STAY TUNED ♡","NO MEMORIES ON AIR");$('start').classList.add('hidden');return}
  const token=++version,c=channels[index];
  player.onloadedmetadata=null;player.onerror=null;player.pause();player.removeAttribute('src');player.load();
  photo.onload=null;photo.onerror=null;photo.removeAttribute('src');
@@ -40,7 +41,7 @@ function render(){
   player.src=c.src;player.load();player.play().catch(()=>{});
  }
 }
-function change(n,step=1){started=true;index=(n+channels.length)%channels.length;turn+=step*30;dial.style.setProperty('--turn',turn+'deg');const el=$('static');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');render()}
+function change(n,step=1){if(!channels.length)return;started=true;index=(n+channels.length)%channels.length;turn+=step*30;dial.style.setProperty('--turn',turn+'deg');const el=$('static');el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');render()}
 function next(step){change(started?index+step:0,step)}
 $('start').onclick=()=>next(1);$('next').onclick=()=>next(1);$('prev').onclick=()=>next(-1);
 $('play').onclick=()=>{if(!started){change(0);return}if(channels[index].type==='video'){if(player.paused)player.play().catch(()=>{});else player.pause()}};
@@ -49,7 +50,7 @@ $('shuffle').onclick=()=>{const offset=1+Math.floor(Math.random()*(channels.leng
 $('mystery').onclick=()=>$('shuffle').click();
 $('rewind').onclick=()=>change(0);
 $('birthday').onclick=()=>{++version;started=false;player.pause();player.removeAttribute('src');player.load();photo.classList.add('hidden');player.classList.add('hidden');$('play').disabled=false;$('play').style.opacity='1';message('HAPPY 22ND, CEMMIE!','A WHOLE LITTLE WORLD OF MEMORIES, JUST FOR YOU ♡');$('start').textContent='EXPLORE THE MEMORIES ♡'};
-$('fullscreen').onclick=()=>{const screen=$('screen');if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}else if(screen.requestFullscreen){screen.requestFullscreen().catch(()=>{})}else if(channels[index].type==='video'&&player.webkitEnterFullscreen){player.webkitEnterFullscreen()}};
+$('fullscreen').onclick=()=>{const screen=$('screen');if(document.fullscreenElement){document.exitFullscreen().catch(()=>{})}else if(screen.requestFullscreen){screen.requestFullscreen().catch(()=>{})}else if(channels[index]?.type==='video'&&player.webkitEnterFullscreen){player.webkitEnterFullscreen()}};
 let drag=null,suppressClick=false;
 function angle(e){const r=dial.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI}
 dial.onpointerdown=e=>{if(e.button!==0)return;drag={id:e.pointerId,last:angle(e),sum:0,moved:false};suppressClick=false;dial.setPointerCapture(e.pointerId)};
@@ -61,4 +62,6 @@ dial.onkeydown=e=>{if(['ArrowLeft','ArrowDown','ArrowRight','ArrowUp'].includes(
 $('gateform').onsubmit=e=>{e.preventDefault();if($('password').value.trim().toLowerCase()==='cemmie22'){$('gate').classList.add('hidden');$('page').classList.remove('hidden');sessionStorage.setItem('cemmie-tv-access','1')}else $('error').textContent='NOT QUITE! TRY AGAIN ♡'};
 if(sessionStorage.getItem('cemmie-tv-access')==='1'){$('gate').classList.add('hidden');$('page').classList.remove('hidden')}
 
+
+if(!channels.length){render();['dial','prev','next','shuffle','play','mystery','rewind'].forEach(id=>{$(id).disabled=true;$(id).style.opacity='.45'});$('hint').textContent='A little pause in the broadcast ♡';}
 </script></body></html>
