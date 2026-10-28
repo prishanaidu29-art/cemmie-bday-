@@ -74,6 +74,8 @@ body.day{background:#e8dfea;--room-text:#594362;--room-muted:#87728e}.day .room-
 @media(max-width:700px){.room-caption{display:block;font-size:12px}.intro{padding-bottom:155px}.lock-card{max-width:350px}.surprise-button{margin-top:14px}.photo-meta{gap:8px}.dots{gap:2px;max-width:180px}}
 
 /* Music-reactive pastel light, anchored to the lamp. */
+@property --music-colour{syntax:'<color>';inherits:true;initial-value:#f4bad9}
+.room-lamp{transition:--music-colour 2.4s ease}
 .lamp-music-glow{position:absolute;left:50%;top:48px;width:620px;height:620px;border-radius:50%;pointer-events:none;z-index:-1;transform:translate(-50%,-35%);background:radial-gradient(ellipse,var(--music-colour,#f4bad9) 0%,transparent 67%);opacity:0;transition:opacity .18s linear,background 1.4s ease;mix-blend-mode:screen}
 .room-lamp.music-lit .lamp-music-glow{opacity:var(--music-strength,0)}
 .room-lamp.music-lit .lamp-shade{background:repeating-linear-gradient(90deg,#ffffff20 0 9px,#b491ac12 10px 11px),linear-gradient(90deg,#d7b5c8,var(--music-colour,#f4bad9) 50%,#dbc5d8);box-shadow:inset 0 3px 2px #fff6,0 0 35px var(--music-colour,#f4bad9);transition:background 1.4s ease,box-shadow 1.4s ease;filter:none}
